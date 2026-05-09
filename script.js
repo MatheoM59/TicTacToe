@@ -7,18 +7,37 @@ const GameBoard = (() => {
     gameBoard[index] = marker;
   };
 
-  return { getGameBoard, editGameBoard };
+  const resetGameBoard = () => {
+    gameBoard.forEach((_, i) => editGameBoard(i, i + 1));
+  };
+
+  return { getGameBoard, editGameBoard, resetGameBoard };
 })();
 
 const Game = (() => {
   let player1, player2, activePlayer;
   let gameOver = false;
+  let gameActive = false;
+
   const init = (p1, p2) => {
     player1 = p1;
     player2 = p2;
     activePlayer = player1;
   };
+
+  const reset = () => {
+    gameOver = false;
+    activePlayer = player1;
+  };
+
+  const getPlayer1 = () => player1.getPlayerName();
+  const getPlayer2 = () => player2.getPlayerName();
   const getActivePlayer = () => activePlayer;
+  const getGameActive = () => gameActive;
+
+  const setGameActive = (value) => {
+    gameActive = value;
+  };
 
   const switchplayer = () => {
     activePlayer = activePlayer === player1 ? player2 : player1;
@@ -45,6 +64,7 @@ const Game = (() => {
   };
 
   const playTurn = (index) => {
+    if (!gameActive) return;
     if (gameOver) return;
     let result;
     GameBoard.editGameBoard(index, activePlayer.getMarker());
@@ -61,53 +81,83 @@ const Game = (() => {
     return result;
   };
 
-  return { init, playTurn, getActivePlayer };
+  return {
+    init,
+    reset,
+    playTurn,
+    getActivePlayer,
+    getGameActive,
+    setGameActive,
+    getPlayer1,
+    getPlayer2,
+  };
 })();
 
 const displayController = (() => {
+  const nameSlot1 = document.querySelector('.nameSlot1');
+  const nameSlot2 = document.querySelector('.nameSlot2');
+  const playerTurnContainer = document.querySelector('.playerTurn');
   const container = document.querySelector('.game');
   const resultContainer = document.querySelector('.result');
+  const startBtn = document.getElementById('start');
+  let gameStatus = Game.getGameActive();
 
-  const display = () => {
-    GameBoard.getGameBoard().forEach((cell, i) => {
-      const displayBoard = document.createElement('div');
-      displayBoard.setAttribute('id', i);
-      displayBoard.innerHTML = `<p>${typeof cell === 'number' ? '' : cell}</p>`;
-      displayBoard.addEventListener('click', () => {
-        if (
-          GameBoard.getGameBoard()[i] === 'X' ||
-          GameBoard.getGameBoard()[i] === 'O'
-        )
-          return;
-
-        const result = Game.playTurn(i);
-        if (!result) return;
-
-        container.innerHTML = '';
-        displayController.display();
-
-        if (result.includes('Win')) {
-          const displayResult = document.createElement('div');
-          displayResult.innerHTML = `<h2>Resultat : ${Game.getActivePlayer().getPlayerName()} ${result}</h2>`;
-          resultContainer.appendChild(displayResult);
-        }
-        if (result.includes('draw')) {
-          const displayResult = document.createElement('div');
-          displayResult.innerHTML = `<h2>Resultat : ${result}</h2>`;
-          resultContainer.appendChild(displayResult);
-        }
-      });
-      container.appendChild(displayBoard);
-    });
-  };
   const createPlayer = (name, marker) => {
     const getPlayerName = () => name;
     const getMarker = () => marker;
     return { getPlayerName, getMarker };
   };
 
+  const display = () => {
+    playerTurnContainer.innerHTML = '';
+    const playerTurnSlot = document.createElement('div');
+    playerTurnSlot.innerHTML = `<p>${Game.getActivePlayer().getPlayerName()}'s turn</p>`;
+    playerTurnContainer.appendChild(playerTurnSlot);
+
+    nameSlot1.innerHTML = '';
+    nameSlot2.innerHTML = '';
+    const name1 = document.createElement('div');
+    name1.innerHTML = `<p>${Game.getPlayer1()}</p>`;
+    const name2 = document.createElement('div');
+    name2.innerHTML = `<p>${Game.getPlayer2()}</p>`;
+    nameSlot1.appendChild(name1);
+    nameSlot2.appendChild(name2);
+
+    GameBoard.getGameBoard().forEach((cell, i) => {
+      const displayBoard = document.createElement('div');
+      displayBoard.setAttribute('id', i);
+      displayBoard.innerHTML = `<p>${typeof cell === 'number' ? '' : cell}</p>`;
+
+      displayBoard.addEventListener('click', () => {
+        if (GameBoard.getGameBoard()[i] === 'X' || GameBoard.getGameBoard()[i] === 'O') return;
+
+        const result = Game.playTurn(i);
+        if (!result) return;
+
+        container.innerHTML = '';
+        display();
+
+        if (result.includes('Win')) {
+          const displayResult = document.createElement('div');
+          displayResult.innerHTML = `<h2>Result: ${Game.getActivePlayer().getPlayerName()} ${result}</h2>`;
+          resultContainer.appendChild(displayResult);
+        }
+        if (result.includes('draw')) {
+          const displayResult = document.createElement('div');
+          displayResult.innerHTML = `<h2>Result: ${result}</h2>`;
+          resultContainer.appendChild(displayResult);
+        }
+      });
+
+      container.appendChild(displayBoard);
+    });
+  };
+
   const displayDialog = () => {
     const popUp = document.getElementById('dialog');
+    popUp.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') event.preventDefault();
+    });
     popUp.showModal();
   };
 
@@ -128,8 +178,22 @@ const displayController = (() => {
     });
   };
 
+  startBtn.addEventListener('click', () => {
+    if (gameStatus === false) {
+      Game.setGameActive(true);
+      gameStatus = true;
+      startBtn.innerHTML = 'Restart';
+    } else if (gameStatus === true) {
+      resultContainer.innerHTML = '';
+      GameBoard.resetGameBoard();
+      Game.reset();
+      container.innerHTML = '';
+      display();
+    }
+  });
+
   return { display, displayDialog, playerCreation };
 })();
-displayController.playerCreation();
 
+displayController.playerCreation();
 displayController.displayDialog();
