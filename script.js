@@ -10,18 +10,14 @@ const GameBoard = (() => {
   return { getGameBoard, editGameBoard };
 })();
 
-const createPlayer = (name, marker) => {
-  const getPlayerName = () => name;
-  const getMarker = () => marker;
-  return { getPlayerName, getMarker };
-};
-
 const Game = (() => {
-  const player1 = createPlayer('Mathéo', 'X');
-  const player2 = createPlayer('Matyas', 'O');
-  let activePlayer = player1;
+  let player1, player2, activePlayer;
   let gameOver = false;
-
+  const init = (p1, p2) => {
+    player1 = p1;
+    player2 = p2;
+    activePlayer = player1;
+  };
   const getActivePlayer = () => activePlayer;
 
   const switchplayer = () => {
@@ -65,7 +61,7 @@ const Game = (() => {
     return result;
   };
 
-  return { playTurn, getActivePlayer };
+  return { init, playTurn, getActivePlayer };
 })();
 
 const displayController = (() => {
@@ -76,7 +72,7 @@ const displayController = (() => {
     GameBoard.getGameBoard().forEach((cell, i) => {
       const displayBoard = document.createElement('div');
       displayBoard.setAttribute('id', i);
-      displayBoard.innerHTML = `<p>${cell}</p>`;
+      displayBoard.innerHTML = `<p>${typeof cell === 'number' ? '' : cell}</p>`;
       displayBoard.addEventListener('click', () => {
         if (
           GameBoard.getGameBoard()[i] === 'X' ||
@@ -104,20 +100,36 @@ const displayController = (() => {
       container.appendChild(displayBoard);
     });
   };
+  const createPlayer = (name, marker) => {
+    const getPlayerName = () => name;
+    const getMarker = () => marker;
+    return { getPlayerName, getMarker };
+  };
 
   const displayDialog = () => {
     const popUp = document.getElementById('dialog');
-    // const input1 = document.getElementById('name1');
-    // const input2 = document.getElementById('name2');
-    // const btn = document.getElementsById('submit');
     popUp.showModal();
-    // btn.addEventListener('click', () => {
-    //   popUp.close();
-    // });
   };
 
-  return { display, displayDialog };
-})();
+  const playerCreation = () => {
+    const btn = document.getElementById('submit');
+    btn.addEventListener('click', (event) => {
+      event.preventDefault();
+      const nom1 = document.getElementById('name1').value.trim();
+      const nom2 = document.getElementById('name2').value.trim();
 
-displayController.display();
+      if (!nom1 || !nom2) return;
+
+      const player1 = createPlayer(nom1, 'X');
+      const player2 = createPlayer(nom2, 'O');
+      Game.init(player1, player2);
+      document.getElementById('dialog').close();
+      display();
+    });
+  };
+
+  return { display, displayDialog, playerCreation };
+})();
+displayController.playerCreation();
+
 displayController.displayDialog();

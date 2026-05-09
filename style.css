@@ -1,0 +1,128 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #1a1a2e;
+  font-family: 'Segoe UI', sans-serif;
+  color: #eee;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #e94560;
+}
+
+.game {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.game div {
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #16213e;
+  border: 2px solid #e94560;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.game div:hover {
+  background-color: #0f3460;
+}
+
+.game div p {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #e94560;
+}
+
+.result h2 {
+  font-size: 1.5rem;
+  color: #e94560;
+  letter-spacing: 2px;
+}
+
+dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #16213e;
+  border: 2px solid #e94560;
+  border-radius: 12px;
+  padding: 32px;
+  color: #eee;
+  width: 320px;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+dialog form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+dialog legend {
+  font-size: 0.9rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e94560;
+  margin-bottom: 4px;
+}
+
+dialog input[type='text'] {
+  width: 100%;
+  padding: 8px 12px;
+  background-color: #1a1a2e;
+  border: 1px solid #e94560;
+  border-radius: 6px;
+  color: #eee;
+  font-size: 1rem;
+  outline: none;
+}
+
+dialog input[type='text']:focus {
+  border-color: #fff;
+}
+
+dialog input[type='submit'] {
+  margin-top: 8px;
+  padding: 10px;
+  background-color: #e94560;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  transition: background-color 0.2s;
+}
+
+dialog input[type='submit']:hover {
+  background-color: #c73652;
+}
