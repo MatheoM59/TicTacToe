@@ -173,9 +173,8 @@ const displayController = (() => {
 
       if (!nom1 || !nom2) return;
 
-      // const player1 = createPlayer(nom1, 'X');
-      // const player2 = createPlayer(nom2, 'O');
       Game.init(nom1, nom2);
+
       document.getElementById('dialog').close();
       display();
     });
