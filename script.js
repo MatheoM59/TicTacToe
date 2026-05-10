@@ -19,9 +19,14 @@ const Game = (() => {
   let gameOver = false;
   let gameActive = false;
 
-  const init = (p1, p2) => {
-    player1 = p1;
-    player2 = p2;
+  const createPlayer = (name, marker) => {
+    const getPlayerName = () => name;
+    const getMarker = () => marker;
+    return { getPlayerName, getMarker };
+  };
+  const init = (nom1, nom2) => {
+    player1 = createPlayer(nom1, 'X');
+    player2 = createPlayer(nom2, 'O');
     activePlayer = player1;
   };
 
@@ -102,12 +107,6 @@ const displayController = (() => {
   const startBtn = document.getElementById('start');
   let gameStatus = Game.getGameActive();
 
-  const createPlayer = (name, marker) => {
-    const getPlayerName = () => name;
-    const getMarker = () => marker;
-    return { getPlayerName, getMarker };
-  };
-
   const display = () => {
     playerTurnContainer.innerHTML = '';
     const playerTurnSlot = document.createElement('div');
@@ -129,7 +128,11 @@ const displayController = (() => {
       displayBoard.innerHTML = `<p>${typeof cell === 'number' ? '' : cell}</p>`;
 
       displayBoard.addEventListener('click', () => {
-        if (GameBoard.getGameBoard()[i] === 'X' || GameBoard.getGameBoard()[i] === 'O') return;
+        if (
+          GameBoard.getGameBoard()[i] === 'X' ||
+          GameBoard.getGameBoard()[i] === 'O'
+        )
+          return;
 
         const result = Game.playTurn(i);
         if (!result) return;
@@ -170,9 +173,9 @@ const displayController = (() => {
 
       if (!nom1 || !nom2) return;
 
-      const player1 = createPlayer(nom1, 'X');
-      const player2 = createPlayer(nom2, 'O');
-      Game.init(player1, player2);
+      // const player1 = createPlayer(nom1, 'X');
+      // const player2 = createPlayer(nom2, 'O');
+      Game.init(nom1, nom2);
       document.getElementById('dialog').close();
       display();
     });
